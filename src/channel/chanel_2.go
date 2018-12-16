@@ -1,39 +1,35 @@
-package main
+package channel
 
 import (
 	"fmt"
+	"sync"
 )
 
-func producer(first chan int) {
-	defer close(first)
+func producer(ch chan int, i int) {
+	ch <- i * 2
+}
+
+func consumer(ch chan int, wg *sync.WaitGroup) {
+	for i := range ch {
+		func() {
+			defer wg.Done()
+			fmt.Println("process", i*100)
+		}()
+	}
+}
+
+func Exec() {
+	var wg sync.WaitGroup
+	ch := make(chan int)
+
 	for i := 0; i < 10; i++ {
-		first <- i
+		wg.Add(1)
+		go producer(ch, i)
 	}
-}
 
-func multi2(first <-chan int, second chan<- int) {
-	defer close(second)
-	for i := range first {
-		second <- i * 2
-	}
-}
+	go consumer(ch, &wg)
+	wg.Wait()
+	close(ch)
 
-func multi4(second <-chan int, third chan<- int) {
-	defer close(third)
-	for i := range second {
-		third <- i * 4
-	}
-}
-
-func main() {
-	first := make(chan int)
-	second := make(chan int)
-	third := make(chan int)
-
-	go producer(first)
-	go multi2(first, second)
-	go multi4(second, third)
-	for result := range third {
-		fmt.Println(result)
-	}
+	//time.Sleep(2 * time.Second)
 }
