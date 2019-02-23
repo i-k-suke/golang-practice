@@ -1,9 +1,20 @@
 package main
 
 import (
-	"github.com/ksuke/mylib/my_http"
+	"github.com/ksuke/gin_practice/bind_uri"
 )
 
 func main() {
-	my_http.ExecHttp()
+	bind_uri.BindUriServer()
+}
+
+// for practice
+func _main() {
+	//my_http.ExecHttp()
+	//my_crypto.ExecMyHmacPractice()
+
+	//my_sync.ExecSemaphorePractice()
+
+	//config.ExecConfigPractice()
+
 }
